@@ -16,7 +16,7 @@ A modern, interactive dice rolling simulator built with Flask and deployed on Ve
 
 ## 🚀 Live Demo
 
-[View Live Demo](https://your-app-name.vercel.app) *(Replace with your actual Vercel URL)*
+[View Live Demo]([[https://your-app-name.vercel.app)]
 
 ## 🛠️ Tech Stack
 
