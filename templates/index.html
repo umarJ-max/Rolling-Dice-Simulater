@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice Rolling Simulator - Umar J</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .branding {
+            color: #667eea;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .dice-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        input, select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 120px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .roll-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-left: 20px;
+        }
+
+        .roll-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .roll-btn:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .dice-display {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .dice {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            animation: rollAnimation 0.5s ease-out;
+        }
+
+        @keyframes rollAnimation {
+            0% { transform: rotateX(0) rotateY(0); }
+            50% { transform: rotateX(180deg) rotateY(180deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        .total {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+            margin: 20px 0;
+        }
+
+        .stats {
+            background: #e3f2fd;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .stats h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .history {
+            margin-top: 20px;
+        }
+
+        .history h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .history-item {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .clear-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .clear-btn:hover {
+            background: #ff5252;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 600px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .roll-btn {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎲 Dice Rolling Simulator</h1>
+            <p class="branding">Created by Umar J</p>
+        </div>
+
+        <div class="dice-container">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="numDice">Number of Dice:</label>
+                    <select id="numDice">
+                        <option value="1">1</option>
+                        <option value="2" selected>2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="8">8</option>
+                        <option value="10">10</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="numSides">Dice Type:</label>
+                    <select id="numSides">
+                        <option value="4">D4</option>
+                        <option value="6" selected>D6 (Standard)</option>
+                        <option value="8">D8</option>
+                        <option value="10">D10</option>
+                        <option value="12">D12</option>
+                        <option value="20">D20</option>
+                        <option value="100">D100</option>
+                    </select>
+                </div>
+                
+                <button class="roll-btn" onclick="rollDice()">🎲 Roll Dice!</button>
+            </div>
+
+            <div class="results" id="results" style="display: none;">
+                <div class="dice-display" id="diceDisplay"></div>
+                <div class="total" id="totalResult"></div>
+            </div>
+        </div>
+
+        <div class="stats" id="stats" style="display: none;">
+            <h3>📊 Statistics</h3>
+            <div class="stats-grid" id="statsGrid"></div>
+        </div>
+
+        <div class="history" id="historySection" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>📝 Recent Rolls</h3>
+                <button class="clear-btn" onclick="clearHistory()">Clear History</button>
+            </div>
+            <div id="historyList"></div>
+        </div>
+
+        <div id="errorMessage" class="error" style="display: none;"></div>
+    </div>
+
+    <script>
+        async function rollDice() {
+            const numDice = parseInt(document.getElementById('numDice').value);
+            const numSides = parseInt(document.getElementById('numSides').value);
+            
+            try {
+                const response = await fetch('/api/roll', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        num_dice: numDice,
+                        num_sides: numSides
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResults(data.result);
+                    updateStats(data.statistics);
+                    loadHistory();
+                    hideError();
+                } else {
+                    showError(data.error);
+                }
+            } catch (error) {
+                showError('Failed to roll dice. Please try again.');
+            }
+        }
+
+        function displayResults(result) {
+            const resultsDiv = document.getElementById('results');
+            const diceDisplay = document.getElementById('diceDisplay');
+            const totalResult = document.getElementById('totalResult');
+            
+            // Clear previous results
+            diceDisplay.innerHTML = '';
+            
+            // Create dice elements
+            result.results.forEach((roll, index) => {
+                const dice = document.createElement('div');
+                dice.className = 'dice';
+                dice.textContent = roll;
+                dice.style.animationDelay = `${index * 0.1}s`;
+                diceDisplay.appendChild(dice);
+            });
+            
+            totalResult.textContent = `Total: ${result.total}`;
+            resultsDiv.style.display = 'block';
+        }
+
+        function updateStats(statistics) {
+            if (!statistics) return;
+            
+            const statsDiv = document.getElementById('stats');
+            const statsGrid = document.getElementById('statsGrid');
+            
+            statsGrid.innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-value">${statistics.total_rolls}</div>
+                    <div class="stat-label">Total Rolls</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${statistics.average}</div>
+                    <div class="stat-label">Average</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${statistics.min}</div>
+                    <div class="stat-label">Minimum</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${statistics.max}</div>
+                    <div class="stat-label">Maximum</div>
+                </div>
+            `;
+            
+            statsDiv.style.display = 'block';
+        }
+
+        async function loadHistory() {
+            try {
+                const response = await fetch('/api/history');
+                const data = await response.json();
+                
+                if (data.success && data.history.length > 0) {
+                    const historySection = document.getElementById('historySection');
+                    const historyList = document.getElementById('historyList');
+                    
+                    historyList.innerHTML = '';
+                    
+                    data.history.reverse().forEach((roll, index) => {
+                        const item = document.createElement('div');
+                        item.className = 'history-item';
+                        item.innerHTML = `
+                            <span>${roll.dice}D${roll.sides}: [${roll.results.join(', ')}]</span>
+                            <span>Total: ${roll.total}</span>
+                        `;
+                        historyList.appendChild(item);
+                    });
+                    
+                    historySection.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Failed to load history:', error);
+            }
+        }
+
+        async function clearHistory() {
+            try {
+                const response = await fetch('/api/clear', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    document.getElementById('historySection').style.display = 'none';
+                    document.getElementById('stats').style.display = 'none';
+                }
+            } catch (error) {
+                showError('Failed to clear history.');
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        // Load history on page load
+        window.onload = function() {
+            loadHistory();
+        }
+    </script>
+</body>
+</html>
